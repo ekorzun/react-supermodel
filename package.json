@@ -1,0 +1,31 @@
+{
+  "name": "react-supermodel",
+  "version": "1.0.0",
+  "main": "dist/supermodel.js",
+  "umd:main": "dist/supermodel.umd.js",
+  "module": "dist/supermodel.mjs",
+  "source": "src/supermodel.js",
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle -w src/index.js",
+    "test": "node test/test.js",
+    "pretest": "yarn run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "baobab": "^2.5.2",
+    "superagent": "^4.0.0-beta.5",
+    "superagent-prefix": "^0.0.2",
+    "superagent-suffix": "^0.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.6.1",
+    "microbundle": "^0.6.0"
+  },
+  "peerDependencies": {
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2"
+  }
+}
