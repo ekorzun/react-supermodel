@@ -75,7 +75,7 @@ class Model {
   }
 
   _makeRequest(endpoint, method, key, validate) {
-    return this._request(endpoint.url, endpoint.data)
+    return this._request(endpoint, endpoint.data)
       .then(response => {
         const { body } = response
         const rawBody = body[key] || body
