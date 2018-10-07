@@ -2,7 +2,6 @@ import React from 'react'
 import Model from './model'
 import ModelConnector from './model-connector'
 import storageConnector from './storage-connector'
-import {config} from './config'
 
 const ModelConnect = (...args) => {
   const cursors = {}

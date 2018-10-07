@@ -1,31 +1,24 @@
 import agent from 'superagent'
 import aprefix from 'superagent-prefix'
 import { expandURL } from './utils'
-import { config } from './config'
+import ModelConnector from './model-connector'
+import { getConfig } from './config'
 
 class Model {
 
-  constructor({
-    idKey = 'id',
-    dataItemKey = 'data',
-    dataListkey = 'data',
-    optimistic,
-    name,
-    api,
-    props,
-  }) {
-    this.name = name
-    this.idKey = idKey
-    this.dataItemKey = dataItemKey
-    this.dataListkey = dataListkey
-    this.optimistic = optimistic
-    this._createApi(api)
+  constructor(opts) {
+    this.name = opts.name
+    this.idKey = opts.idKey || 'id'
+    this.dataItemKey = opts.dataItemKey || 'data'
+    this.dataListKey = opts.dataListKey || 'data'
+    this.optimistic = opts.optimistic
+    this._createApi(opts.api)
   }
 
   _createApi(api) {
     this.api = {}
     'get/list/create/update/delete'.split('/').forEach(method => {
-      if(api[method]) {
+      if (api[method]) {
         this.api[method] = this.createEndpoint(api[method])
       }
     })
@@ -61,7 +54,8 @@ class Model {
 
   list(params) {
     const endpoint = this.api.list(params)
-    return this._makeRequest(endpoint, 'list', this.dataListKey, items => {
+    const key = this.dataListKey
+    return this._makeRequest(endpoint, 'list', key, items => {
       if (!Array.isArray(items)) {
         throw new Error(`Must be an array`)
       }
@@ -75,10 +69,13 @@ class Model {
   }
 
   _makeRequest(endpoint, method, key, validate) {
-    return this._request(endpoint, endpoint.data)
+    const { $onResponse, ...data } = endpoint.data
+    return this._request(endpoint, data)
       .then(response => {
         const { body } = response
+        $onResponse && $onResponse(body)
         const rawBody = body[key] || body
+        // console.log('rawBody: ', key, rawBody)
         const importData = this.api[method].import
         const rawData = importData ? importData(rawBody) : rawBody
         validate && validate(rawData)
@@ -97,12 +94,10 @@ class Model {
       }
     }
 
-    const {
-      accept,
-      withCredentials,
-      prefix,
-      auth,
-    } = config
+    const accept = getConfig('accept')
+    const withCredentials = getConfig('withCredentials')
+    const prefix = getConfig('prefix')
+    const auth = getConfig('auth')
 
     if (accept) {
       request.accept(accept)
@@ -126,7 +121,14 @@ class Model {
   getShema() { }
   createSchema() { }
   createConnector() { }
-  getConnector() { }
+
+
+  getConnector() {
+    if (this._connector) {
+      return this._connector
+    }
+    return (this._connector = new ModelConnector(this))
+  }
 }
 
 

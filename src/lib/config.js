@@ -1,4 +1,4 @@
-export const config  = {
+const config  = {
   auth: '',
   prefix: '',
   withCredentials: false,
@@ -7,5 +7,15 @@ export const config  = {
   onError: f => f,
 }
 
-export default opts =>
+const setConfig = opts => {
   Object.assign(config, opts)
+}
+
+
+const getConfig = opt =>
+  config[opt]
+
+export {
+  getConfig,
+  setConfig,
+}
