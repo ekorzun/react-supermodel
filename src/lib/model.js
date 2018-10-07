@@ -62,7 +62,7 @@ class Model {
     })
   }
 
-  delete(id, props) {
+  delete(id, props = {}) {
     props[this.idKey] = id
     const endpoint = this.api.delete(props)
     return this._makeRequest(endpoint, 'delete', this.dataItemKey)
