@@ -8,8 +8,14 @@ const User = new Model({
   api: {
     get: '/users/:id',
     create: 'POST /users',
+    list: {
+      url: '/users',
+      import: r => r
+    },
     delete: 'DELETE /users/:id',
-    update: 'PUT /users/:id',
+    update: {
+      url: 'put /users/:id',
+    },
   }
 })
 
@@ -45,6 +51,15 @@ describe('Model API calls', () => {
     }).then(user => {
       expect(user.name).to.equal('korzun')
       expect(user.id).to.equal(11)
+      done()
+    })
+  })
+
+
+  it('Fetching list without `dataListKey`', done => {
+    User.list().then(users => {
+      expect(users.length).to.equal(10)
+      expect(users[0].id).to.equal(1)
       done()
     })
   })
