@@ -26,6 +26,7 @@ describe('Model connector & store', () => {
       const user = User.get(100)
       expect(user.isLoading).to.equal(false)
       expect(user.error).to.equal(true)
+      User.get(2)
       done()
     }, 1800)
   })
@@ -67,7 +68,7 @@ describe('Model connector & store', () => {
     const user = User.get(1)
     expect(user.data.name).to.equal('evgeny')
     expect(user.isSaving).to.equal( true )
-    
+
     req
       .then(ResponseUser => {
         expect(ResponseUser.name).to.equal('evgeny')
@@ -101,7 +102,38 @@ describe('Model connector & store', () => {
         expect(User.get(ResponseUser.id).data.name).to.equal(name)
         done()
       })
-      
+  })
+
+
+  it('Should delete without optimistic strategy', done => {
+    const req = User.delete(1)
+    expect(User.get(1).isDeleting).to.equal(true)
+
+    req.then(ResponseUser => {
+        expect(
+          User
+            .all()
+            .data
+            .findIndex(u => u.data.id === 1)
+        ).to.equal( -1 )
+        done()
+      })
+  })
+
+  it('Should delete using optimistic strategy', done => {
+    UserModel.optimistic.delete = true
+    const req = User.delete(2)
+    expect(
+      User
+        .all()
+        .data
+        .findIndex(u => u.data.id === 2)
+    ).to.equal(-1)
+
+    req
+      .then(ResponseUser => {
+        done()
+      })
   })
 
 
