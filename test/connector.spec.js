@@ -9,10 +9,12 @@ describe('Model connector & store', () => {
   it('Fetching an object by id', done => {
     const user = User.get(1)
     expect(user.isLoading).to.equal(true)
-    expect(user.data).to.deep.equal({})
+
     const i = setInterval(() => {
       const user = User.get(1)
-      expect(user.isLoading).to.equal(false)
+      if (user.isLoading) { return }
+      
+      expect(!user.isLoading).to.equal(true)
       expect(user.data.id).to.equal(1)
       clearInterval(i)
       done()
@@ -25,9 +27,9 @@ describe('Model connector & store', () => {
     expect(user.isLoading).to.equal(true)
     const i = setInterval(() => {
       const user = User.get(100)
+      if (user.isLoading) {return}
       expect(user.isLoading).to.equal(false)
       expect(user.error).to.equal(true)
-      User.get(2)
       clearInterval(i)
       done()
     }, 1000)
@@ -36,19 +38,21 @@ describe('Model connector & store', () => {
 
   it('Getting an object by id from cache', () => {
     const user = User.get(1)
-    expect(user.isLoading).to.equal(false)
+    expect(!user.isLoading).to.equal(true)
     expect(user.data.id).to.deep.equal(1)
   })
 
 
   it('Should contain user #1 object in default collection', () => {
     const users = User.all()
+    console.log('users: ', users);
     expect(users.data[0].data.id).to.equal(1)
   })
 
 
   it('Should not contain user #100 object in default collection', () => {
     const users = User.all()
+    
     expect(users.data.length).to.equal(1)
   })
 
@@ -87,7 +91,10 @@ describe('Model connector & store', () => {
 
   it('Should create without optimistic strategy', done => {
     User
-      .create({ name: 'korzun' })
+      .create({ 
+        name: 'korzun',
+        id: 444, // json placeholder hack ;(
+      })
       .then(ResponseUser => {
         expect(ResponseUser.name).to.equal('korzun')
         expect(User.get(ResponseUser.id).data.name).to.equal('korzun')
@@ -96,6 +103,22 @@ describe('Model connector & store', () => {
       .catch(err => {
         console.error(err)
       })
+  })
+
+
+  it('Should delete without optimistic strategy', done => {
+    const req = User.delete(1)
+    expect(User.get(1).isDeleting).to.equal(true)
+
+    req.then(ResponseUser => {
+      expect(
+        User
+          .all()
+          .data
+          .findIndex(u => u.data.id === 1)
+      ).to.equal(-1)
+      done()
+    })
   })
 
   it('Should create using optimistic strategy', done => {
@@ -119,21 +142,6 @@ describe('Model connector & store', () => {
   })
 
 
-  it('Should delete without optimistic strategy', done => {
-    const req = User.delete(1)
-    expect(User.get(1).isDeleting).to.equal(true)
-
-    req.then(ResponseUser => {
-        expect(
-          User
-            .all()
-            .data
-            .findIndex(u => u.data.id === 1)
-        ).to.equal( -1 )
-        done()
-      })
-  })
-
   it('Should delete using optimistic strategy', done => {
     UserModel.optimistic.delete = true
     const req = User.delete(2)
@@ -150,53 +158,69 @@ describe('Model connector & store', () => {
       })
   })
 
-
   it('Fetching items with no params', done => {
     const users = User.list()
+    console.log('users.data: ', users);
     expect(users.isLoading).to.equal(true)
-    expect(users.data).to.deep.equal([])
-    setTimeout(() => {
+
+    const i = setInterval(() => {
       const users = User.list()
-      expect(users.data.length).to.equal(10)
+      if(users.isLoading) {
+        return
+      }
+      clearInterval(i)
+      expect(users.data.length).to.equal(11)
       done()
-    }, 2000)
+    }, 1000)
   })
 
 
   it('Fetching items with params', done => {
-    const users = User.list({page: 1})
+    const users = User.list({random: 1})
     expect(users.isLoading).to.equal(true)
-    expect(users.data).to.deep.equal([])
-    setTimeout(() => {
+
+    const i = setInterval(() => {
       const users = User.list()
-      expect(users.data.length).to.equal(10)
+      if (users.isLoading) {return}
+      console.log('users: ', User.list().data);
+      clearInterval(i)
+      // expect(users.data.length).to.equal(10)
       done()
-    }, 2000)
+    }, 1000)
   })
 
   it('Fetching items by `$key`', done => {
-    const users = User.list({$key: 'users'})
+    const query = { $key: 'users' }
+    const users = User.list(query)
     expect(users.isLoading).to.equal(true)
-    expect(users.data).to.deep.equal([])
-    setTimeout(() => {
-      const users = User.list()
+    const i = setInterval(() => {
+      const users = User.list(query)
+      if (users.isLoading) {
+        return
+      }
+      clearInterval(i)
       expect(users.data.length).to.equal(10)
       done()
-    }, 2000)
+    }, 1000)
   })
 
   it('Fetching items into other collection', done => {
-    const users = User.list({
-      sex: 'female',
-    }, 'women')
+    const query = {sex: 'female',}
+    const users = User.list(query, 'women')
     expect(users.isLoading).to.equal(true)
     expect(users.data).to.deep.equal([])
-    setTimeout(() => {
-      const users = User.list()
+
+    const i = setInterval(() => {
+      const users = User.list(query)
+      if (users.isLoading) {
+        return
+      }
+      clearInterval(i)
       expect(users.data.length).to.equal(10)
       done()
-    }, 2000)
+    }, 1000)
   })
+
 
   
   it('Getting items with no params from cache', () => {

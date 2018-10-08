@@ -279,7 +279,7 @@ class ModelConnector {
       ...params
     } = query
 
-    let key = ($key || JSON.stringify(params))
+    let key = $key ? $key : JSON.stringify(params)
 
     if( key === '{}') {
       key = 'default'
