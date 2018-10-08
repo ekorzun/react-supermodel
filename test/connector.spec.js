@@ -10,25 +10,27 @@ describe('Model connector & store', () => {
     const user = User.get(1)
     expect(user.isLoading).to.equal(true)
     expect(user.data).to.deep.equal({})
-    setTimeout(() => {
+    const i = setInterval(() => {
       const user = User.get(1)
       expect(user.isLoading).to.equal(false)
       expect(user.data.id).to.equal(1)
+      clearInterval(i)
       done()
-    }, 1800)
+    }, 1000)
   })
   
 
   it('Resolving an error', done => {
     const user = User.get(100)
     expect(user.isLoading).to.equal(true)
-    setTimeout(() => {
+    const i = setInterval(() => {
       const user = User.get(100)
       expect(user.isLoading).to.equal(false)
       expect(user.error).to.equal(true)
       User.get(2)
+      clearInterval(i)
       done()
-    }, 1800)
+    }, 1000)
   })
 
 
@@ -58,6 +60,9 @@ describe('Model connector & store', () => {
         expect(User.get(1).data.name).to.equal('korzun')
         done()
       })
+      .catch(err => {
+        console.error(err)
+      })
   })
 
 
@@ -67,13 +72,16 @@ describe('Model connector & store', () => {
     const req = User.updateById(1, {name: 'evgeny'})
     const user = User.get(1)
     expect(user.data.name).to.equal('evgeny')
-    expect(user.isSaving).to.equal( true )
+    expect(user.isUpdating).to.equal( true )
 
     req
       .then(ResponseUser => {
         expect(ResponseUser.name).to.equal('evgeny')
         expect(User.get(1).data.name).to.equal('evgeny')
         done()
+      })
+      .catch(err => {
+        console.error(err)
       })
   })
 
@@ -84,6 +92,9 @@ describe('Model connector & store', () => {
         expect(ResponseUser.name).to.equal('korzun')
         expect(User.get(ResponseUser.id).data.name).to.equal('korzun')
         done()
+      })
+      .catch(err => {
+        console.error(err)
       })
   })
 
@@ -101,6 +112,9 @@ describe('Model connector & store', () => {
         expect(ResponseUser.name).to.equal(name)
         expect(User.get(ResponseUser.id).data.name).to.equal(name)
         done()
+      })
+      .catch(err => {
+        console.error(err)
       })
   })
 
@@ -135,6 +149,91 @@ describe('Model connector & store', () => {
         done()
       })
   })
+
+
+  it('Fetching items with no params', done => {
+    const users = User.list()
+    expect(users.isLoading).to.equal(true)
+    expect(users.data).to.deep.equal([])
+    setTimeout(() => {
+      const users = User.list()
+      expect(users.data.length).to.equal(10)
+      done()
+    }, 2000)
+  })
+
+
+  it('Fetching items with params', done => {
+    const users = User.list({page: 1})
+    expect(users.isLoading).to.equal(true)
+    expect(users.data).to.deep.equal([])
+    setTimeout(() => {
+      const users = User.list()
+      expect(users.data.length).to.equal(10)
+      done()
+    }, 2000)
+  })
+
+  it('Fetching items by `$key`', done => {
+    const users = User.list({$key: 'users'})
+    expect(users.isLoading).to.equal(true)
+    expect(users.data).to.deep.equal([])
+    setTimeout(() => {
+      const users = User.list()
+      expect(users.data.length).to.equal(10)
+      done()
+    }, 2000)
+  })
+
+  it('Fetching items into other collection', done => {
+    const users = User.list({
+      sex: 'female',
+    }, 'women')
+    expect(users.isLoading).to.equal(true)
+    expect(users.data).to.deep.equal([])
+    setTimeout(() => {
+      const users = User.list()
+      expect(users.data.length).to.equal(10)
+      done()
+    }, 2000)
+  })
+
+  
+  it('Getting items with no params from cache', () => {
+    const users = User.list()
+    expect(users.isLoading).to.equal(false)
+    expect(users.data.length).to.equal(10)
+  })
+
+
+  it('Getting items with params from cache', () => {
+    const users = User.list({page: 1})
+    expect(users.isLoading).to.equal(false)
+    expect(users.data.length).to.equal(10)
+  })
+
+  it('Getting items by `$key` from cache', () => {
+    const users = User.list({$key: 'users'})
+    expect(users.isLoading).to.equal(false)
+    expect(users.data.length).to.equal(10)
+  })
+
+  it('Getting items into other collection from cache', () => {
+    const users = User.list({
+      sex: 'female',
+    }, 'women')
+    expect(users.isLoading).to.equal(false)
+    expect(users.data.length).to.equal(10)
+  })
+
+
+  it('Ensure items exist in collections without duplicates', () => {
+    const users = User.all()
+    const women = User.all('women')
+    expect(users.data.length > 10).to.equal(true)
+    expect(women.data.length).to.equal(10)
+  })
+
 
 
 
