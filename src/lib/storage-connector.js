@@ -1,11 +1,11 @@
 import React from 'react'
-import { config } from './config'
+import { getConfig } from './config'
 
 class TreeConnector extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.onUpdate = this.onUpdate.bind(this)
-    this._$watcher = config.tree.watch(props.cursors)
+    this._$watcher = getConfig('tree').watch(props.cursors)
     this.state = this._$watcher.get()
   }
 
@@ -41,6 +41,6 @@ class TreeConnector extends React.Component {
 
 export default (cursors, Component) => {
   return (props) => (
-    <TreeConnector Component={Component} tree={tree} cursors={cursors} {...props} />
+    <TreeConnector Component={Component} cursors={cursors} {...props} />
   )
 }
