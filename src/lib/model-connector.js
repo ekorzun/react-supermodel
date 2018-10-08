@@ -72,7 +72,7 @@ class ModelConnector {
     const { model, $state } = this
     const possibleCached = $state.get('items', id)
     if (possibleCached) {
-      log(`${model.name}.get(${id}) from cache`)
+      // log(`${model.name}.get(${id}) from cache`)
       return possibleCached
     }
 

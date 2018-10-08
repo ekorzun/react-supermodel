@@ -11,7 +11,7 @@ class Model {
     this.idKey = opts.idKey || 'id'
     this.dataItemKey = opts.dataItemKey || 'data'
     this.dataListKey = opts.dataListKey || 'data'
-    this.optimistic = opts.optimistic
+    this.optimistic = opts.optimistic !== undefined ? opts.optimistic : {}
     this._createApi(opts.api)
   }
 
