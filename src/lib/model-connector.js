@@ -115,9 +115,9 @@ class ModelConnector {
     const optimisticUpdate = model.optimistic && (model.optimistic === true || model.optimistic.update)
 
     if ($item.exists()) {
-      $item.set('isSaving', true)
+      $item.set('isUpdating', true)
     } else {
-      $item.set({ isSaving: true, data: {} })
+      $item.set({ isUpdating: true, data: {} })
     }
 
     if (optimisticUpdate) {
@@ -129,7 +129,7 @@ class ModelConnector {
     return model.update(id, props)
       .then(item => {
         $item.merge({
-          isSaving: false,
+          isUpdating: false,
           data: {
             ...$item.get('data'),
             ...props,
@@ -279,7 +279,12 @@ class ModelConnector {
       ...params
     } = query
 
-    const key = ($key || (params ? JSON.stringify(params) : 'default'))
+    let key = ($key || JSON.stringify(params))
+
+    if( key === '{}') {
+      key = 'default'
+    }
+
     const { model, $state } = this
     const $items = $state.select('items')
     const $cache = $state.select('cached', key)
