@@ -304,9 +304,17 @@ class ModelConnector {
           data: items.map(item => item[model.idKey]),
         })
 
+        const $collection = $state.select('collections', collection)
+        if (!$collection.exists()) {
+          $collection.set([])
+        }
+
         $items.merge(items.reduce((acc, item) => {
-          $state.select('collections', collection).push(item[model.idKey])
-          acc[item[model.idKey]] = { data: item }
+          const id = item[model.idKey]
+          acc[id] = { data: item }
+          if (!$collection.get(item_id => item_id === id)){
+            $collection.push(id)
+          }
           return acc
         }, {}))
         // $isLoading.set(false)
