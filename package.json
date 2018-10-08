@@ -8,7 +8,7 @@
   "scripts": {
     "build": "microbundle",
     "dev": "microbundle -w src/index.js",
-    "test": "nyc mocha -R spec --require babel-register test/*.spec.js",
+    "test": "nyc mocha --timeout 15000 -w -R spec --require babel-register test/*.spec.js",
     "pretest": "yarn run build"
   },
   "files": [

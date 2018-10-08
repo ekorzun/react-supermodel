@@ -36,6 +36,8 @@ class ModelConnector {
     const $state = this.tree.select('$api')
     if (!$state.get(name)) { $state.select(name).set(getDefaultConnectorState()) }
     this.$state = this.tree.select('$api', name)
+
+    this._push = this._push.bind(this)
   }
 
   createDynamicList(key) {
@@ -113,7 +115,7 @@ class ModelConnector {
     const optimisticUpdate = model.optimistic && (model.optimistic === true || model.optimistic.update)
 
     if ($item.exists()) {
-      !optimisticUpdate && $item.set('isSaving', true)
+      $item.set('isSaving', true)
     } else {
       $item.set({ isSaving: true, data: {} })
     }
@@ -191,7 +193,7 @@ class ModelConnector {
 
 
   create(props = {}, collection = 'all') {
-    const { $state, model } = this
+    const { $state, model, _push } = this
     const { $key = 'default', ...params } = props
     const optimisticCreate = model.optimistic && (model.optimistic === true || model.optimistic.create)
     const tempID = optimisticCreate ? +new Date : null
@@ -214,7 +216,7 @@ class ModelConnector {
         })
         $state.select('collections', collection).push(tempID)
         if ($key) {
-          $state.select('cached', $key, 'data').push(tempID)
+          _push($key, tempID)
         }
       }
 
@@ -232,7 +234,10 @@ class ModelConnector {
             })
 
             $state.select('collections', collection).push(id)
-            if ($key) { $state.select('cached', $key, 'data').push(id) }
+
+            if ($key) {
+              _push($key, id)
+            }
 
           } else {
 
@@ -328,6 +333,16 @@ class ModelConnector {
     }
   }
 
+  _push(key, data) {
+    const $list = this.$state.select('cached', key)
+    if ($list.exists()){
+      $list.select('data').push(data)
+    } else {
+      $list.set({
+        data: [data]
+      })
+    }
+  }
 
   drop(opts) {
     if (!opts) {

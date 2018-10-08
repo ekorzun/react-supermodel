@@ -65,13 +65,43 @@ describe('Model connector & store', () => {
 
     const req = User.updateById(1, {name: 'evgeny'})
     const user = User.get(1)
-
     expect(user.data.name).to.equal('evgeny')
-    req.then(ResponseUser => {
+    expect(user.isSaving).to.equal( true )
+    
+    req
+      .then(ResponseUser => {
         expect(ResponseUser.name).to.equal('evgeny')
         expect(User.get(1).data.name).to.equal('evgeny')
         done()
       })
+  })
+
+  it('Should create without optimistic strategy', done => {
+    User
+      .create({ name: 'korzun' })
+      .then(ResponseUser => {
+        expect(ResponseUser.name).to.equal('korzun')
+        expect(User.get(ResponseUser.id).data.name).to.equal('korzun')
+        done()
+      })
+  })
+
+  it('Should create using optimistic strategy', done => {
+    UserModel.optimistic.create = true
+    const name = 'korzun 123'
+    const req = User.create({name})
+    
+    const newCreatedUser = User.all().data.find(u => u.data.name === name)
+    expect(newCreatedUser.data.name).to.equal(name)
+    expect(newCreatedUser.isCreating).to.equal(true)
+
+    req
+      .then(ResponseUser => {
+        expect(ResponseUser.name).to.equal(name)
+        expect(User.get(ResponseUser.id).data.name).to.equal(name)
+        done()
+      })
+      
   })
 
 
