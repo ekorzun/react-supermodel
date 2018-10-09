@@ -139,13 +139,14 @@ describe('Model connector & store', () => {
 
   it('Should delete using optimistic strategy', done => {
     UserModel.optimistic.delete = true
-    const req = User.delete(11).catch(e => e).then(done)
+    const req = User.delete(11).catch(e => e)
     expect(
       User
         .all()
         .data
         .findIndex(u => u.data.id === 11)
     ).to.equal(-1)
+    req.then(_ => done())
   })
 
   // it('Fetching items with no params', done => {
