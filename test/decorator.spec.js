@@ -44,10 +44,12 @@ const UserConnector = UserModel.getConnector()
 
 describe('App component testing', () => {
 
-  const wrapper = mount(<ConnectedApp />)
+  let wrapper
 
 
   it('loading state', done => {
+    UserConnector.drop()
+    wrapper = mount(<ConnectedApp />)
     expect(wrapper.find('.loading')).to.have.lengthOf(1)
     done()
   })
