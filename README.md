@@ -25,7 +25,10 @@ Supercharged REST-api wrapper for React.
     - [modelOptions.api – required](#modeloptionsapi--required)
   - [3. Create connection](#3-create-connection)
 - [Examples](#examples)
+- [Using Baobab as application's store](#using-baobab-as-applications-store)
 - [Using with redux / etc](#using-with-redux--etc)
+- [Using without React](#using-without-react)
+- [Development & test](#development--test)
 - [Licence](#licence)
 
 ## Demo
@@ -151,9 +154,24 @@ class App extends Component {
 }
 ```
 
+## Using Baobab as application's store
+–
 
 ## Using with redux / etc
+–
+
+## Using without React
+–
+
+## Development & test
+
+```
+git clone https://github.com/ekorzun/react-supermodel.git
+cd react-supermodel
+yarn install
+yarn test
+```
 
 ## Licence 
-MIT
+MIT.
 
