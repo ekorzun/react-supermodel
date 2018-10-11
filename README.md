@@ -34,7 +34,8 @@ Supercharged REST-api wrapper for React.
 
 ## Demo
 
-Gif
+– Gif
+– https://codesandbox.io/s/04poy3y2kp
 
 ## Features
 – Works out of the box
