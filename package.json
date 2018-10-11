@@ -1,11 +1,17 @@
 {
   "name": "react-supermodel",
   "version": "1.0.1",
+  "homepage": "https://github.com/ekorzun/react-supermodel",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ekorzun/react-supermodel.git"
+  },
   "main": "dist/supermodel.js",
   "umd:main": "dist/supermodel.umd.js",
   "module": "dist/supermodel.mjs",
   "source": "src/supermodel.js",
   "scripts": {
+    "prepublish": "yarn build",
     "build": "microbundle",
     "dev": "microbundle -w src/index.js",
     "test": "nyc mocha --timeout 30000 -R spec --require babel-register test/*.spec.js",
