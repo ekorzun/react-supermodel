@@ -16,7 +16,7 @@
   "module": "dist/supermodel.mjs",
   "source": "src/supermodel.js",
   "scripts": {
-    "prepublish": "yarn build",
+    "prepublish": "yarn test",
     "prebuild": "rm -rf ./dist",
     "build": "microbundle build -i src/index.js",
     "dev": "microbundle -w src/index.js",

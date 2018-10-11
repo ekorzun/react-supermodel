@@ -11,6 +11,9 @@ export {
 
 export default connect
 
-if(typeof module !== 'undefined') {
-	module.exports = connect
+if(typeof exports !== 'undefined') {
+	exports = connect
+	exports.setConfig = setConfig
+	exports.getConfig = getConfig
+	exports.Model = Model
 }
