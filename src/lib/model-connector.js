@@ -1,7 +1,4 @@
 import {dynamicNode} from 'baobab'
-import agent from 'superagent'
-import prefix from 'superagent-prefix'
-import Model from './model'
 import { getConfig } from './config'
 
 

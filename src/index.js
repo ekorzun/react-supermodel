@@ -6,6 +6,11 @@ export {
 	setConfig,
 	getConfig,
 	Model,
-	connect,
-	connect as default,
+	connect
+}
+
+export default connect
+
+if(typeof module !== 'undefined') {
+	module.exports = connect
 }

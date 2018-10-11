@@ -2,6 +2,11 @@
   "name": "react-supermodel",
   "version": "1.0.2",
   "homepage": "https://github.com/ekorzun/react-supermodel",
+  "author": {
+    "name": "Evgeny Korzun",
+    "email": "e.korzun@gmail.com"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/ekorzun/react-supermodel.git"
@@ -12,7 +17,8 @@
   "source": "src/supermodel.js",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "microbundle",
+    "prebuild": "rm -rf ./dist",
+    "build": "microbundle build -i src/index.js",
     "dev": "microbundle -w src/index.js",
     "test": "nyc mocha --timeout 30000 -R spec --require babel-register test/*.spec.js",
     "pretest": "yarn run build"
