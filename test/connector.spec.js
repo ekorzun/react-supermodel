@@ -117,6 +117,7 @@ describe('Model connector & store', () => {
   })
 
   it('Should create using optimistic strategy', done => {
+    User.drop()
     UserModel.optimistic.create = true
     const name = 'korzun 123'
     const req = User.create({name})
@@ -139,115 +140,120 @@ describe('Model connector & store', () => {
 
   it('Should delete using optimistic strategy', done => {
     UserModel.optimistic.delete = true
-    const req = User.delete(11).catch(e => e)
-    expect(
-      User
-        .all()
-        .data
-        .findIndex(u => u.data.id === 11)
-    ).to.equal(-1)
-    req.then(_ => done())
+    User.get(1)
+    const i = setInterval(_ => {
+      if(!User.get(1).isLoading) {
+        clearInterval(i)
+        const req = User.delete(1).catch(e => e)
+        expect(
+          User
+            .all()
+            .data
+            .findIndex(u => u.data.id === 1)
+        ).to.equal(-1)
+        req.then(_ => done())
+      }
+    }, 1000)
   })
 
-  // it('Fetching items with no params', done => {
-  //   const users = User.list()
-  //   console.log('users.data: ', users);
-  //   expect(users.isLoading).to.equal(true)
+  it('Fetching items with no params', done => {
+    User.drop()
+    const users = User.list()
+    expect(users.isLoading).to.equal(true)
 
-  //   const i = setInterval(() => {
-  //     const users = User.list()
-  //     if(users.isLoading) {
-  //       return
-  //     }
-  //     clearInterval(i)
-  //     expect(users.data.length).to.equal(11)
-  //     done()
-  //   }, 1000)
-  // })
+    const i = setInterval(() => {
+      const users = User.list()
+      if(!users.isLoading) {
+        clearInterval(i)
+        expect(users.data.length).to.equal(10)
+        done()
+      }
+      
+    }, 1000)
+  })
 
 
-  // it('Fetching items with params', done => {
-  //   const users = User.list({random: 1})
-  //   expect(users.isLoading).to.equal(true)
+  it('Fetching items with params', done => {
+    const users = User.list({random: 1})
+    expect(users.isLoading).to.equal(true)
 
-  //   const i = setInterval(() => {
-  //     const users = User.list()
-  //     if (users.isLoading) {return}
-  //     console.log('users: ', User.list().data);
-  //     clearInterval(i)
-  //     // expect(users.data.length).to.equal(10)
-  //     done()
-  //   }, 1000)
-  // })
+    const i = setInterval(() => {
+      const users = User.list()
+      if (!users.isLoading) {
+        clearInterval(i)
+        expect(users.data.length).to.equal(10)
+        done()
+      }
+    }, 1000)
+  })
 
-  // it('Fetching items by `$key`', done => {
-  //   const query = { $key: 'users' }
-  //   const users = User.list(query)
-  //   expect(users.isLoading).to.equal(true)
-  //   const i = setInterval(() => {
-  //     const users = User.list(query)
-  //     if (users.isLoading) {
-  //       return
-  //     }
-  //     clearInterval(i)
-  //     expect(users.data.length).to.equal(10)
-  //     done()
-  //   }, 1000)
-  // })
+  it('Fetching items by `$key`', done => {
+    const query = { $key: 'users' }
+    const users = User.list(query)
+    expect(users.isLoading).to.equal(true)
+    const i = setInterval(() => {
+      const users = User.list(query)
+      if (!users.isLoading) {
+        clearInterval(i)
+        expect(users.data.length).to.equal(10)
+        done()
+      }
+    }, 1000)
+  })
 
-  // it('Fetching items into other collection', done => {
-  //   const query = {sex: 'female',}
-  //   const users = User.list(query, 'women')
-  //   expect(users.isLoading).to.equal(true)
-  //   expect(users.data).to.deep.equal([])
+  it('Fetching items into other collection', done => {
+    const query = {sex: 'female',}
+    const users = User.list(query, 'women')
+    expect(users.isLoading).to.equal(true)
+    expect(users.data).to.deep.equal([])
 
-  //   const i = setInterval(() => {
-  //     const users = User.list(query)
-  //     if (users.isLoading) {
-  //       return
-  //     }
-  //     clearInterval(i)
-  //     expect(users.data.length).to.equal(10)
-  //     done()
-  //   }, 1000)
-  // })
+    const i = setInterval(() => {
+      const users = User.list(query)
+      if (!users.isLoading) {
+        clearInterval(i)
+        expect(users.data.length).to.equal(10)
+        done()
+      }
+      
+    }, 1000)
+  })
 
 
   
-  // it('Getting items with no params from cache', () => {
-  //   const users = User.list()
-  //   expect(users.isLoading).to.equal(false)
-  //   expect(users.data.length).to.equal(10)
-  // })
+  it('Getting items with no params from cache', () => {
+    const users = User.list()
+    expect(users.isLoading).to.equal(false)
+    expect(users.data.length).to.equal(10)
+  })
 
 
-  // it('Getting items with params from cache', () => {
-  //   const users = User.list({page: 1})
-  //   expect(users.isLoading).to.equal(false)
-  //   expect(users.data.length).to.equal(10)
-  // })
+  it('Getting items with params from cache', () => {
+    const users = User.list({ random: 1})
+    expect(users.isLoading).to.equal(false)
+    expect(users.data.length).to.equal(10)
+  })
 
-  // it('Getting items by `$key` from cache', () => {
-  //   const users = User.list({$key: 'users'})
-  //   expect(users.isLoading).to.equal(false)
-  //   expect(users.data.length).to.equal(10)
-  // })
+  it('Getting items by `$key` from cache', () => {
+    const users = User.list({$key: 'users'})
+    expect(users.isLoading).to.equal(false)
+    expect(users.data.length).to.equal(10)
+  })
 
-  // it('Getting items into other collection from cache', () => {
-  //   const users = User.list({
-  //     sex: 'female',
-  //   }, 'women')
-  //   expect(users.isLoading).to.equal(false)
-  //   expect(users.data.length).to.equal(10)
-  // })
+  it('Getting items into other collection from cache', () => {
+    const users = User.list({
+      sex: 'female',
+    }, 'women')
+    expect(users.isLoading).to.equal(false)
+    expect(users.data.length).to.equal(10)
+  })
 
 
-  // it('Ensure items exist in collections without duplicates', () => {
-  //   const users = User.all()
-  //   const women = User.all('women')
-  //   expect(users.data.length > 10).to.equal(true)
-  //   expect(women.data.length).to.equal(10)
-  // })
+  it('Ensure items exist in collections without duplicates', () => {
+    const users = User.all()
+    const women = User.all('women')
+    expect(users.data.length).to.equal(10)
+    expect(women.data.length).to.equal(10)
+  })
 
 
 
