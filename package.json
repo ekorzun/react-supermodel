@@ -1,6 +1,6 @@
 {
   "name": "react-supermodel",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/supermodel.js",
   "umd:main": "dist/supermodel.umd.js",
   "module": "dist/supermodel.mjs",
