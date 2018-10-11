@@ -4,6 +4,7 @@ Supercharged REST-api wrapper for React.
 
 - [react-supermodel](#react-supermodel)
 - [Demo](#demo)
+- [Features](#features)
 - [Installation](#installation)
   - [Through yarn](#through-yarn)
   - [Through NPM](#through-npm)
@@ -34,6 +35,14 @@ Supercharged REST-api wrapper for React.
 ## Demo
 
 Gif
+
+## Features
+– Works out of the box
+– Cache control
+– Optimistic/Pessimistic strategies for UI/data updating
+– Backend-agnostic 
+– Immutable state
+– 
 
 ## Installation
 

@@ -6,14 +6,13 @@ export {
 	setConfig,
 	getConfig,
 	Model,
-	connect
+	connect,
+	connect as default
 }
 
-export default connect
-
-if(typeof exports !== 'undefined') {
-	exports = connect
-	exports.setConfig = setConfig
-	exports.getConfig = getConfig
-	exports.Model = Model
-}
+// if(typeof exports !== 'undefined') {
+// 	exports = connect
+// 	exports.setConfig = setConfig
+// 	exports.getConfig = getConfig
+// 	exports.Model = Model
+// }
