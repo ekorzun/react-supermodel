@@ -97,9 +97,10 @@ See – https://visionmedia.github.io/superagent/#cors
 
 
 #### options.onSuccess
-//
+–
+
 #### options.onError
-//
+–
 
 
 ### 2. Create model
@@ -122,12 +123,22 @@ const UserModel = new Model({
 
 
 #### modelOptions.name – required
+–
 
 #### modelOptions.idKey
+–
+
 #### modelOptions.dataItemKey
+–
+
 #### modelOptions.dataListkey
+–
+
 #### modelOptions.optimistic
+–
+
 #### modelOptions.api – required
+–
 
 ### 3. Create connection
 ```javascript
