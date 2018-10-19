@@ -1,4 +1,3 @@
-import {dynamicNode} from 'baobab'
 import { getConfig } from './config'
 
 
@@ -37,35 +36,35 @@ class ModelConnector {
     this._push = this._push.bind(this)
   }
 
-  createDynamicList(key) {
-    const { $state, model } = this
-    $state.select('dynamic', key).set(dynamicNode({
-      cursors: {
-        items: ['$api', model.name, 'items'],
-        isLoading: ['$api', model.name, 'isLoading', key],
-        collection: ['$api', model.name, 'cached', key],
-      },
-      get: ({ collection, isLoading, items }) => ({
-        isLoading,
-        data: collection.data.map(id => items[id]),
-      }),
-    }))
-  }
+  // createDynamicList(key) {
+  //   const { $state, model } = this
+  //   $state.select('dynamic', key).set(dynamicNode({
+  //     cursors: {
+  //       items: ['$api', model.name, 'items'],
+  //       isLoading: ['$api', model.name, 'isLoading', key],
+  //       collection: ['$api', model.name, 'cached', key],
+  //     },
+  //     get: ({ collection, isLoading, items }) => ({
+  //       isLoading,
+  //       data: collection.data.map(id => items[id]),
+  //     }),
+  //   }))
+  // }
 
-  createDynamicCollection(key) {
-    const { $state, model } = this
-    $state.select('dynamic', key).set(dynamicNode({
-      cursors: {
-        items: ['$api', model.name, 'items'],
-        isLoading: ['$api', model.name, 'isLoading', key],
-        collection: ['$api', model.name, 'collections', key],
-      },
-      get: ({ collection, isLoading, items }) => ({
-        isLoading,
-        data: collection.data.map(id => items[id]),
-      }),
-    }))
-  }
+  // createDynamicCollection(key) {
+  //   const { $state, model } = this
+  //   $state.select('dynamic', key).set(dynamicNode({
+  //     cursors: {
+  //       items: ['$api', model.name, 'items'],
+  //       isLoading: ['$api', model.name, 'isLoading', key],
+  //       collection: ['$api', model.name, 'collections', key],
+  //     },
+  //     get: ({ collection, isLoading, items }) => ({
+  //       isLoading,
+  //       data: collection.data.map(id => items[id]),
+  //     }),
+  //   }))
+  // }
 
   get(id, collection = 'all') {
     const { model, $state } = this
