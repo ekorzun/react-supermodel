@@ -3,10 +3,12 @@ import aprefix from 'superagent-prefix'
 import { expandURL } from './utils'
 import ModelConnector from './model-connector'
 import { getConfig } from './config'
+import Emmett from 'emmett'
 
-class Model {
+class Model extends Emmett {
 
   constructor(opts) {
+    super()
     this.name = opts.name
     this.idKey = opts.idKey || 'id'
     this.dataItemKey = opts.dataItemKey || 'data'
@@ -17,11 +19,20 @@ class Model {
 
   _createApi(api) {
     this.api = {}
-    'get/list/create/update/delete'.split('/').forEach(method => {
-      if (api[method]) {
-        this.api[method] = this.createEndpoint(api[method])
+    Object.keys(api).forEach(method => {
+      this.api[method] = this.createEndpoint(api[method])
+      if(!this[method]){
+        this._createApiMethod(method)
       }
     })
+  }
+
+  _createApiMethod(method) {
+    alert(`Unsupported`)
+    this[method] = (...args) => {
+      const endpoint = this.api[method].apply(this, args)
+      return endpoint
+    }
   }
 
   createEndpoint(endpoint) {
@@ -69,10 +80,16 @@ class Model {
   }
 
   _makeRequest(endpoint, method, key, validate) {
+    this.emit(`${method}Before`, endpoint.data)
     const { $onResponse, ...data } = endpoint.data
-    return this._request(endpoint, data)
+    return this.request(endpoint, data)
+      .catch(err => {
+        this.emit(`${method}Error`, err)
+        throw err
+      })
       .then(response => {
         const { body } = response
+        this.emit(`${method}Success`, body)
         $onResponse && $onResponse(body)
         const rawBody = body[key] || body
         // console.log('rawBody: ', key, rawBody)
@@ -84,7 +101,7 @@ class Model {
   }
 
 
-  _request({ method, url }, data) {
+  request({ method, url }, data) {
     const request = agent[method](url)
     if (data) {
       if (method === 'get') {

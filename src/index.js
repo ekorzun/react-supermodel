@@ -6,9 +6,10 @@ export {
 	setConfig,
 	getConfig,
 	Model,
-	connect,
-	connect as default
+	connect
 }
+
+export default connect
 
 // if(typeof exports !== 'undefined') {
 // 	exports = connect
