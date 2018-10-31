@@ -1,5 +1,6 @@
 import agent from 'superagent'
 import aprefix from 'superagent-prefix'
+import asuffix from 'superagent-suffix'
 import { expandURL } from './utils'
 import ModelConnector from './model-connector'
 import { getConfig } from './config'
@@ -42,6 +43,7 @@ class Model extends Emmett {
     }
     const fn = params => expandURL(endpoint.url, params)
     fn.import = endpoint.import
+    fn.append = endpoint.append
     return fn
   }
 
@@ -82,6 +84,11 @@ class Model extends Emmett {
   _makeRequest(endpoint, method, key, validate) {
     this.emit(`${method}Before`, endpoint.data)
     const { $onResponse, ...data } = endpoint.data
+    const append = getConfig('append')
+    if(append) {
+      const appendedData = typeof append === 'function' ? append() : append
+      Object.assign(data, appendedData)
+    }
     return this.request(endpoint, data)
       .catch(err => {
         this.emit(`${method}Error`, err)
@@ -114,6 +121,7 @@ class Model extends Emmett {
     const accept = getConfig('accept')
     const withCredentials = getConfig('withCredentials')
     const prefix = getConfig('prefix')
+    const suffix = getConfig('suffix')
     const auth = getConfig('auth')
 
     if (accept) {
@@ -124,6 +132,9 @@ class Model extends Emmett {
     }
     if (prefix) {
       request.use(aprefix(typeof prefix === 'function' ? prefix() : prefix))
+    }
+    if (suffix) {
+      request.use(asuffix(typeof suffix === 'function' ? suffix() : suffix))
     }
     if (auth) {
       request.set(`Authorization`, typeof auth === 'function' ? auth() : auth)
