@@ -34,6 +34,7 @@ export const expandURL = (url, data = {}, method = 'get') => {
   if (method === 'get') {
     for (let dataKey of Object.keys(data).filter(k => !usedKeys[k])) {
       if (data[dataKey] !== undefined) {
+        usedKeys[dataKey] = true
         url = addURLParam(url, dataKey, data[dataKey])
       }
     }
