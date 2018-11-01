@@ -86,7 +86,7 @@ class Model extends Emmett {
     const { $onResponse, ...data } = endpoint.data
     const append = getConfig('append')
     if(append) {
-      const appendedData = typeof append === 'function' ? append(data, this, method) : append
+      const appendedData = typeof append === 'function' ? append(endpoint.originalData, this, method) : append
       Object.assign(data, appendedData)
     }
     return this.request(endpoint, data)
