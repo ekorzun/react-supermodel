@@ -29,10 +29,9 @@ class Model extends Emmett {
   }
 
   _createApiMethod(method) {
-    alert(`Unsupported`)
-    this[method] = (...args) => {
-      const endpoint = this.api[method].apply(this, args)
-      return endpoint
+    this[method] = (data) => {
+      const endpoint = this.api[method].apply(this, data)
+      return this._makeRequest(endpoint, endpoint.method)
     }
   }
 
