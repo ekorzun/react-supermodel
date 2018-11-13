@@ -13,7 +13,13 @@ const ModelConnect = (...args) => {
       connectors[connector.name] = connector
       cursors[`${connector.name}_watcher`] = ['$api', connector.name]
     } else {
-      // @todo cursor
+      // @todo add dynamic cursors support
+      if(arg && typeof arg === 'object') {
+        Object.keys(arg)
+          .forEach(key => {
+            cursors[key] = arg[key].split('.')
+          })
+      }
     }
   })
 
