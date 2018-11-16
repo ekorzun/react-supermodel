@@ -16,6 +16,7 @@ class Model extends Emmett {
     this.dataListKey = opts.dataListKey || 'data'
     this.optimistic = opts.optimistic !== undefined ? opts.optimistic : {}
     this._createApi(opts.api)
+    this.attributes = opts.attributes
   }
 
   _createApi(api) {
