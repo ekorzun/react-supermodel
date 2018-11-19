@@ -267,6 +267,26 @@ class ModelConnector {
     )
   }
 
+  unshift(obj, opts = {}) {
+    const { model, $state } = this
+    const id = obj[model.idKey]
+    const key = opts.$key || 'default'
+    const collection = opts.collection || 'all'
+    const $items = $state.select('items')
+    const $collection = $state.select('collections', collection)
+    const $cache = $state.select('cached', $key)
+    
+    if (!$collection.exists()) {$collection.set([])}
+    if (!$cache.exists()) {$cache.set([])}
+
+    $items.merge({
+      [id]: {
+        data: obj,
+      },
+    })
+    $cache.unshift(id)
+    $collection.unshift(id)
+  }
 
   list(query = {}, collection = 'all') {
     const {

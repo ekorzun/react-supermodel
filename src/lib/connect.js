@@ -9,7 +9,7 @@ const ModelConnect = (...args) => {
 
   args.forEach(arg => {
     if(arg instanceof Model) {
-      const connector = new ModelConnector(arg)
+      const connector = arg.getConnector()
       connectors[connector.name] = connector
       cursors[`${connector.name}_watcher`] = ['$api', connector.name]
     } else {

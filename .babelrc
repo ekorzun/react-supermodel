@@ -1,3 +1,12 @@
 {
-  "presets": ["airbnb", "env"]
+  "presets": ["@babel/preset-env"],
+  "plugins": [
+    "transform-react-jsx",
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": true
+      }
+    ]
+  ]
 }
