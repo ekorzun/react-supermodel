@@ -48,27 +48,22 @@ class Model extends Emmett {
   }
 
   get(id) {
-    const endpoint = this.api.get({ [this.idKey]: id })
-    return this._makeRequest(endpoint, 'get', this.dataItemKey)
+    return this._makeRequest({ [this.idKey]: id }, 'get', this.dataItemKey)
   }
 
 
   update(id, props) {
     props[this.idKey] = id
-    const endpoint = this.api.update(props)
-    return this._makeRequest(endpoint, 'update', this.dataItemKey)
+    return this._makeRequest(props, 'update', this.dataItemKey)
   }
 
   create(props) {
-    const endpoint = this.api.create(props)
-    return this._makeRequest(endpoint, 'create', this.dataItemKey)
+    return this._makeRequest(props, 'create', this.dataItemKey)
   }
 
 
   list(params) {
-    const endpoint = this.api.list(params)
-    const key = this.dataListKey
-    return this._makeRequest(endpoint, 'list', key, items => {
+    return this._makeRequest(params, 'list', this.dataListKey, items => {
       if (!Array.isArray(items)) {
         throw new Error(`Must be an array`)
       }
@@ -77,18 +72,21 @@ class Model extends Emmett {
 
   delete(id, props = {}) {
     props[this.idKey] = id
-    const endpoint = this.api.delete(props)
-    return this._makeRequest(endpoint, 'delete', this.dataItemKey)
+    return this._makeRequest(props, 'delete', this.dataItemKey)
   }
 
-  _makeRequest(endpoint, method, key, validate) {
-    this.emit(`${method}Before`, endpoint.data)
-    const { $onResponse, ...data } = endpoint.data
+  _makeRequest(payload, method, key, validate) {
+    payload = payload || {}
     const append = getConfig('append')
     if(append) {
-      const appendedData = typeof append === 'function' ? append(endpoint.originalData, this, method) : append
-      Object.assign(data, appendedData)
+      const appendedData = typeof append === 'function' ? append(payload, this, method) : append
+      Object.assign(payload, appendedData)
     }
+    
+    this.emit(`${method}Before`, payload)
+    const { $onResponse, ...data } = payload
+    const endpoint = this.api[method](data)
+
     return this.request(endpoint, data)
       .catch(err => {
         this.emit(`${method}Error`, err)
