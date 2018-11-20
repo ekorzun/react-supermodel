@@ -1,4 +1,3 @@
-import agent from 'superagent'
 import aprefix from 'superagent-prefix'
 import asuffix from 'superagent-suffix'
 import { expandURL } from './utils'
@@ -10,6 +9,7 @@ class Model extends Emmett {
 
   constructor(opts) {
     super()
+    this.agent = getConfig('agent')
     this.name = opts.name
     this.idKey = opts.idKey || 'id'
     this.dataItemKey = opts.dataItemKey || 'data'
@@ -107,7 +107,7 @@ class Model extends Emmett {
 
 
   request({ method, url }, data) {
-    const request = agent[method](url)
+    const request = this.agent[method](url)
     if (data) {
       if (method === 'get') {
         request.query(data)

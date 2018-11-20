@@ -1,4 +1,7 @@
+import agent from 'superagent'
+
 const config  = {
+  agent,
   auth: '',
   prefix: '',
   withCredentials: false,

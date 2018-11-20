@@ -25,10 +25,16 @@ const ModelConnect = (...args) => {
 
   return (Component) => {
     const ConnectedComponent = storageConnector(cursors, Component)
-    return (props) => <ConnectedComponent 
-      {...connectors}
-      {...props}
-    />
+    return class extends React.PureComponent {
+      render(){
+        return (
+          <ConnectedComponent
+            {...connectors}
+            {...this.props}
+          />
+        )
+      }
+    }
   }
 }
 
