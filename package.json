@@ -1,6 +1,6 @@
 {
   "name": "react-supermodel",
-  "version": "1.1.12",
+  "version": "1.1.13",
   "homepage": "https://github.com/ekorzun/react-supermodel",
   "author": {
     "name": "Evgeny Korzun",
@@ -14,7 +14,9 @@
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rm -rf ./dist && mkdir dist",
-    "build": "parcel build src/index.js --out-dir dist",
+    "build_browser": "parcel build src/index.js --out-dir dist",
+    "build_server": "parcel build src/index.js --target=node --out-file=server.js --out-dir dist",
+    "build": "yarn build_browser && yarn build_server",
     "dev": "microbundle -w src/index.js",
     "test": "nyc mocha --timeout 30000 -R spec --compilers js:@babel/register test/*.spec.js"
   },
@@ -23,7 +25,7 @@
   ],
   "dependencies": {
     "baobab": "^2.5.2",
-    "superagent": "^4.0.0-beta.5",
+    "superagent": "^4.0.0",
     "superagent-prefix": "^0.0.2",
     "superagent-suffix": "^0.1.0"
   },
