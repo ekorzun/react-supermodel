@@ -1,6 +1,6 @@
 {
   "name": "react-supermodel",
-  "version": "1.1.15",
+  "version": "1.1.16",
   "homepage": "https://github.com/ekorzun/react-supermodel",
   "author": {
     "name": "Evgeny Korzun",
@@ -14,8 +14,8 @@
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rm -rf ./dist && mkdir dist",
-    "build_browser": "parcel build src/index.js --out-dir dist",
-    "build_server": "parcel build src/index.js --target=node --out-file=server.js --out-dir dist",
+    "build_browser": "TARGET=web webpack -p",
+    "build_server": "TARGET=node webpack -p",
     "build": "yarn build_browser && yarn build_server",
     "dev": "microbundle -w src/index.js",
     "test": "nyc mocha --timeout 30000 -R spec --compilers js:@babel/register test/*.spec.js"
@@ -33,6 +33,7 @@
     "@babel/core": "^7.0.0-0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/register": "^7.0.0",
+    "babel-loader": "^8.0.4",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-airbnb": "^3.0.1",
     "babel-preset-env": "^1.7.0",
@@ -42,13 +43,13 @@
     "eslint": "^5.6.1",
     "istanbul": "^0.4.5",
     "jsdom": "^12.2.0",
-    "microbundle": "^0.6.0",
     "mocha": "^5.2.0",
     "mocha-clean": "^1.0.0",
     "nyc": "^13.0.1",
-    "parcel-bundler": "^1.10.3",
     "react": "^16.5.2",
     "react-addons-test-utils": "^15.6.2",
-    "react-dom": "^16.5.2"
+    "react-dom": "^16.5.2",
+    "webpack": "^4.26.0",
+    "webpack-cli": "^3.1.2"
   }
 }
