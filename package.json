@@ -14,8 +14,8 @@
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rm -rf ./dist && mkdir dist",
-    "build_browser": "TARGET=web webpack -p",
-    "build_server": "TARGET=node webpack -p",
+    "build_browser": "NODE_ENV=production TARGET=web webpack",
+    "build_server": "NODE_ENV=production TARGET=node webpack",
     "build": "yarn build_browser && yarn build_server",
     "dev": "microbundle -w src/index.js",
     "test": "nyc mocha --timeout 30000 -R spec --compilers js:@babel/register test/*.spec.js"
