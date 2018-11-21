@@ -50,6 +50,7 @@
     "react-addons-test-utils": "^15.6.2",
     "react-dom": "^16.5.2",
     "webpack": "^4.26.0",
-    "webpack-cli": "^3.1.2"
+    "webpack-cli": "^3.1.2",
+    "webpack-node-externals": "^1.7.2"
   }
 }

@@ -1,9 +1,13 @@
 const target = process.env.TARGET
+const externals = target === 'node'
+  ? [require('webpack-node-externals')()]
+  : []
 
 module.exports = {
   entry: './src/index.js',
   target: target || 'node',
   mode: 'production',
+  externals,
   output: {
     filename: target === 'node' ? 'server.js' : 'index.js'
   },
