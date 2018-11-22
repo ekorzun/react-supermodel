@@ -1,6 +1,6 @@
 {
   "name": "react-supermodel",
-  "version": "1.1.21",
+  "version": "1.1.22",
   "homepage": "https://github.com/ekorzun/react-supermodel",
   "author": {
     "name": "Evgeny Korzun",
@@ -21,8 +21,7 @@
     "test": "nyc mocha --timeout 30000 -R spec --compilers js:@babel/register test/*.spec.js"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "dependencies": {
     "baobab": "^2.5.2",
