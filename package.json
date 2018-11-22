@@ -1,6 +1,6 @@
 {
   "name": "react-supermodel",
-  "version": "1.1.20",
+  "version": "1.1.21",
   "homepage": "https://github.com/ekorzun/react-supermodel",
   "author": {
     "name": "Evgeny Korzun",
@@ -12,7 +12,6 @@
     "url": "https://github.com/ekorzun/react-supermodel.git"
   },
   "main": "dist/index.js",
-  "module": "dist/server.js",
   "scripts": {
     "prebuild": "rm -rf ./dist && mkdir dist",
     "build_browser": "NODE_ENV=production TARGET=web webpack",
