@@ -18,6 +18,7 @@
     "build_server": "NODE_ENV=production TARGET=node webpack",
     "build": "yarn build_browser && yarn build_server",
     "dev": "microbundle -w src/index.js",
+    "pretest": "yarn build_browser",
     "test": "nyc mocha --timeout 30000 -R spec --compilers js:@babel/register test/custom.spec.js"
   },
   "files": [

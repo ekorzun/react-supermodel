@@ -1,6 +1,6 @@
 import React from 'react'
 import Model from './model'
-import ModelConnector from './model-connector'
+// import ModelConnector from './model-connector'
 import storageConnector from './storage-connector'
 
 const ModelConnect = (...args) => {
@@ -8,7 +8,7 @@ const ModelConnect = (...args) => {
   const connectors = {}
 
   args.forEach(arg => {
-    if(arg instanceof Model) {
+    if(arg instanceof Model || (arg && arg.getConnector)) {
       const connector = arg.getConnector()
       connectors[connector.name] = connector
       cursors[`${connector.name}_watcher`] = ['$api', connector.name]
