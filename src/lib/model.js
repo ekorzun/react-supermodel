@@ -49,6 +49,9 @@ class Model extends Emmett {
     const fn = params => expandURL(endpoint.url, params)
     fn.import = endpoint.import
     fn.append = endpoint.append
+    fn.accept = endpoint.accept || getConfig('accept')
+    fn.encoding = endpoint.encoding || getConfig('encoding')
+    fn.isBinary = endpoint.isBinary
     
     if(fn.store) {
       if(typeof fn.store === 'string') {
@@ -102,30 +105,35 @@ class Model extends Emmett {
     
     this.emit(`${method}Before`, payload)
     const { $onResponse, ...data } = payload
-    const endpoint = this.api[method](data)
+    
+    const fn = this.api[method]
+    const endpoint = fn(data)
     // console.log('endpoint: ', endpoint);
 
-    return this.request(endpoint, endpoint.data, payload)
+    return this.request(endpoint, endpoint.data, payload, fn)
       .catch(err => {
         this.emit(`${method}Error`, err)
         throw err
       })
       .then(response => {
         const { body } = response
-        this.emit(`${method}Success`, body)
-        $onResponse && $onResponse(body)
-        const rawBody = body[key] || body
-        // console.log('rawBody: ', key, rawBody)
-        const importData = this.api[method].import
-        const rawData = importData ? importData(rawBody) : rawBody
-        validate && validate(rawData)
-        return rawData
+        if( body ) {
+          this.emit(`${method}Success`, body)
+          $onResponse && $onResponse(body)
+          const rawBody = body[key] || body
+          // console.log('rawBody: ', key, rawBody)
+          const importData = this.api[method].import
+          const rawData = importData ? importData(rawBody) : rawBody
+          validate && validate(rawData)
+          return rawData
+        }
+        return response
       })
   }
 
 
-  request({ method, url }, data, originalData) {
-    const request = this.agent[method](url)
+  request({ method, url }, data, originalData, fn) {
+    let request = this.agent[method](url)
 
     const accept = getConfig('accept')
     const withCredentials = getConfig('withCredentials')
@@ -133,8 +141,25 @@ class Model extends Emmett {
     const suffix = getConfig('suffix')
     const auth = getConfig('auth')
 
+    if (fn.isBinary) {
+      request
+        .responseType('blob')
+        // .parse((res, callback) => {
+        //   res.data = ''
+        //   res.setEncoding('binary')
+        //   res.on('data', (chunk) => {
+        //     res.data += chunk
+        //   })
+        //   res.on('end', () => {
+        //     callback(null, new Buffer(res.data, 'binary'));
+        //   })
+        // })
+        // .buffer()
+    }
+
     if (accept) {
-      request.accept(accept)
+      const _accept = typeof accept === 'function' ? accept({ method, url }, data, originalData) : accept
+      request.accept(_accept)
     }
     if (withCredentials) {
       request.withCredentials()
