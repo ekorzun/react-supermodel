@@ -169,10 +169,10 @@ class Model extends Emmett {
       request.withCredentials()
     }
     if (prefix) {
-      request.use(aprefix(typeof prefix === 'function' ? prefix() : prefix))
+      request.use(aprefix(typeof prefix === 'function' ? prefix({ method, url }, data, originalData) : prefix))
     }
     if (suffix) {
-      request.use(asuffix(typeof suffix === 'function' ? suffix() : suffix))
+      request.use(asuffix(typeof suffix === 'function' ? suffix({ method, url }, data, originalData) : suffix))
     }
     if (auth) {
       request.set(`Authorization`, typeof auth === 'function' ? auth({
