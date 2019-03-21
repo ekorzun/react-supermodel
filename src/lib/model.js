@@ -66,7 +66,11 @@ class Model extends Emmett {
   }
 
   get(id) {
-    return this._makeRequest({ [this.idKey]: id }, 'get', this.dataItemKey)
+    const type = typeof id
+    const params = (type === 'string' || type === 'number')
+      ? {[this.idKey]: id}
+      : id
+    return this._makeRequest(params, 'get', this.dataItemKey)
   }
 
 
