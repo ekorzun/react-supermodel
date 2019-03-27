@@ -8,6 +8,7 @@ const config  = {
   accept: 'json',
   onSuccess: f => f,
   onError: f => f,
+  getError: () => false,
 }
 
 const setConfig = opts => {

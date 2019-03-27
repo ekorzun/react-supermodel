@@ -103,6 +103,7 @@ class Model extends Emmett {
   _makeRequest(payload, method, key, validate) {
     payload = payload || {}
     const append = getConfig('append')
+    const getError = getConfig('getError')
     
     
     if(append) {
@@ -120,6 +121,13 @@ class Model extends Emmett {
     // console.log('endpoint: ', endpoint);
 
     return this.request(endpoint, endpoint.data, payload, fn)
+      .then(response => {
+        const err = getError(response)
+        if (err) {
+          throw err
+        }
+        return response
+      })
       .catch(err => {
         this.emit(`${method}Error`, err)
         throw err
