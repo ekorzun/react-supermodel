@@ -30,6 +30,7 @@ export const expandURL = (url, data = {}, method = 'get') => {
       }
       return ''
     })
+    
   // Adding other params from data by key
   if (method === 'get') {
     for (let dataKey of Object.keys(data).filter(k => !usedKeys[k])) {

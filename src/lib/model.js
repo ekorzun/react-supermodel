@@ -10,6 +10,9 @@ class Model extends Emmett {
 
   constructor(opts) {
     super()
+    if (!opts.name) {
+      throw new Error('name prop is missing')
+    }
     this.agent = getConfig('agent')
     this.name = opts.name
     this.idKey = opts.idKey || 'id'
@@ -82,7 +85,6 @@ class Model extends Emmett {
   create(props) {
     return this._makeRequest(props, 'create', this.dataItemKey)
   }
-
 
   list(params) {
     return this._makeRequest(params, 'list', this.dataListKey, items => {
@@ -182,6 +184,7 @@ class Model extends Emmett {
     }
 
     if (data) {
+      const sentData = (fn && fn.export) ? fn.export(data) : data
       if (method === 'get') {
         request.query(data)
       } else {
@@ -207,6 +210,7 @@ class Model extends Emmett {
     }
     return (this._connector = new ModelConnector(this))
   }
+
 }
 
 
