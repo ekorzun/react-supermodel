@@ -166,7 +166,9 @@ class Model extends Emmett {
       request.accept(_accept)
     }
     if (withCredentials) {
-      request.withCredentials()
+      request.withCredentials(
+        typeof withCredentials === 'function' ? withCredentials({ method, url }, data, originalData) : withCredentials
+      )
     }
     if (prefix) {
       request.use(aprefix(typeof prefix === 'function' ? prefix({ method, url }, data, originalData) : prefix))
