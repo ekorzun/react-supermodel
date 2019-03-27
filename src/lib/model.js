@@ -51,6 +51,7 @@ class Model extends Emmett {
 
     const fn = params => expandURL(endpoint.url, params)
     fn.import = endpoint.import
+    fn.export = endpoint.export
     fn.append = endpoint.append
     fn.accept = endpoint.accept || getConfig('accept')
     fn.encoding = endpoint.encoding || getConfig('encoding')
@@ -108,11 +109,13 @@ class Model extends Emmett {
       const appendedData = typeof append === 'function' ? append(payload, this, method) : append
       Object.assign(payload, appendedData)
     }
-    
+
     this.emit(`${method}Before`, payload)
-    const { $onResponse, ...data } = payload
+    const { $onResponse, ..._data } = payload
     
     const fn = this.api[method]
+    const data = (fn && fn.export) ? fn.export(_data) : _data
+
     const endpoint = fn(data)
     // console.log('endpoint: ', endpoint);
 
@@ -186,7 +189,6 @@ class Model extends Emmett {
     }
 
     if (data) {
-      const sentData = (fn && fn.export) ? fn.export(data) : data
       if (method === 'get') {
         request.query(data)
       } else {
