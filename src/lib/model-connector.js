@@ -66,8 +66,10 @@ class ModelConnector {
   //   }))
   // }
 
-  get(id, collection = 'all') {
+  get(params, collection = 'all') {
     const { model, $state } = this
+    const id = params == Number(params) || typeof params === 'string' ? params : params[model.idKey]
+
     const possibleCached = $state.get('items', id)
     if (possibleCached) {
       // log(`${model.name}.get(${id}) from cache`)
@@ -78,7 +80,7 @@ class ModelConnector {
     $item.set({ isLoading: true, data: {} })
 
     // log(`${this.name}.get(${id}) 🏀 requesting by url ${requestUrl}`)
-    model.get(id)
+    model.get(params)
       .then(item => {
         if (!item) { return }
         $item.merge({
