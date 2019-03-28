@@ -101,7 +101,11 @@ class Model extends Emmett {
   }
 
   _makeRequest(payload, method, key, validate) {
-    payload = payload || {}
+    const fn = this.api[method]
+
+    payload = (fn && fn.export) ? fn.export((payload || {})) : (payload || {})
+
+    
     const append = getConfig('append')
     const getError = getConfig('getError')
     
@@ -112,10 +116,8 @@ class Model extends Emmett {
     }
 
     this.emit(`${method}Before`, payload)
-    const { $onResponse, ..._data } = payload
+    const { $onResponse, ...data } = payload
     
-    const fn = this.api[method]
-    const data = (fn && fn.export) ? fn.export(_data) : _data
 
     const endpoint = fn(data)
     // console.log('endpoint: ', endpoint);

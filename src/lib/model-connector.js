@@ -258,7 +258,7 @@ class ModelConnector {
           return item
         })
         .catch(err => {
-          console.log('err: ', err)
+          // console.log('err: ', err)
           throw err.response
         })
     })(
