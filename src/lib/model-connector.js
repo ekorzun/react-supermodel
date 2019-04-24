@@ -15,6 +15,7 @@ const getDefaultConnectorState = () => ({
   isLoading: {},
   errors: {},
   cached: {},
+  getters: {},
 })
 
 const log = msg => {
@@ -65,6 +66,39 @@ class ModelConnector {
   //     }),
   //   }))
   // }
+
+  createConnectorMethod(endpoint){
+    
+  }
+
+
+  getter(url, params) {
+    const { model, $state } = this
+    const id = `${url}-${JSON.stringify(params)}`
+    const possibleCached = $state.get('getters', id)
+    if (possibleCached) {return possibleCached}
+    const $item = $state.select('getters', id)
+    $item.set({ isLoading: true, data: {} })
+    model.get(params)
+      .then(item => {
+        if (!item) { return }
+        $item.merge({
+          error: false,
+          isLoading: false,
+          data: {
+            ...$item.get('data'),
+            ...item,
+          },
+        })
+      })
+      .catch(response => {
+        $item.merge({
+          isLoading: false,
+          error: true,
+        })
+      })
+    return $item.get()
+  }
 
   get(params, collection = 'all') {
     const { model, $state } = this

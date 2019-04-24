@@ -29,7 +29,7 @@ class Model extends Emmett {
       // console.log('method: ', method);
       this.api[method] = this.createEndpoint(api[method])
       if(!this[method]){
-        this._createApiMethod(method)
+        this._createApiMethod(method, endpoint)
       }
     })
   }
@@ -49,13 +49,22 @@ class Model extends Emmett {
       return fn
     }
 
-    const fn = params => expandURL(endpoint.url, params)
+    const fn = params => typeof endpoint.url === 'string' 
+       ? expandURL(endpoint.url, params)
+      : expandURL(endpoint.url(params, endpoint), params)
+
     fn.import = endpoint.import
     fn.export = endpoint.export
     fn.append = endpoint.append
     fn.accept = endpoint.accept || getConfig('accept')
     fn.encoding = endpoint.encoding || getConfig('encoding')
     fn.isBinary = endpoint.isBinary
+
+    if(endpoint.isGetter) {
+      this
+        .getConnector()
+
+    }
     
     if(fn.store) {
       if(typeof fn.store === 'string') {
@@ -159,6 +168,8 @@ class Model extends Emmett {
     const prefix = getConfig('prefix')
     const suffix = getConfig('suffix')
     const auth = getConfig('auth')
+    const headers = getConfig('headers')
+    const unsetHeaders = getConfig('unsetHeaders')
 
     if (fn.isBinary) {
       request
@@ -203,6 +214,18 @@ class Model extends Emmett {
         request.query(data)
       } else {
         request.send(data)
+      }
+    }
+
+    if(headers) {
+      if (Array.isArray(headers)) {
+        headers.forEach(h => request.set(h.key, h.value))
+      }
+    }
+
+    if(unsetHeaders) {
+      if (Array.isArray(unsetHeaders)) {
+        unsetHeaders.forEach(h => request.unset(h))
       }
     }
 
