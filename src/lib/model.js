@@ -1,3 +1,5 @@
+// https://stackoverflow.com/questions/38508420/how-to-know-if-a-function-is-async
+
 import Emmett from 'emmett'
 import aprefix from 'superagent-prefix'
 import asuffix from 'superagent-suffix'
@@ -27,31 +29,33 @@ class Model extends Emmett {
     this.api = {}
     Object.keys(api).forEach(method => {
       // console.log('method: ', method);
-      this.api[method] = this.createEndpoint(api[method])
+      this.api[method] = this.createEndpoint(api[method], method)
       if(!this[method]){
-        this._createApiMethod(method, endpoint)
+        this._createCustomApiMethod(method)
       }
     })
   }
 
-  _createApiMethod(method) {
+  _createCustomApiMethod(method) {
     // console.log('method: ', method);
     this[method] = (data) => {
+      // const m = this.api[method]
       // const endpoint = this.api[method].call(this, data)
       return this._makeRequest(data, method)
     }
   }
 
-  createEndpoint(endpoint) {
+  createEndpoint(endpoint, methodName) {
     
     if (typeof endpoint === 'string') {
       const fn = params => expandURL(endpoint, params)
       return fn
     }
 
-    const fn = params => typeof endpoint.url === 'string' 
-       ? expandURL(endpoint.url, params)
-      : expandURL(endpoint.url(params, endpoint), params)
+    const fn = params => 
+      typeof endpoint.url === 'string' 
+        ? expandURL(endpoint.url, params)
+        : expandURL(endpoint.url(params, endpoint), params)
 
     fn.import = endpoint.import
     fn.export = endpoint.export
@@ -59,11 +63,12 @@ class Model extends Emmett {
     fn.accept = endpoint.accept || getConfig('accept')
     fn.encoding = endpoint.encoding || getConfig('encoding')
     fn.isBinary = endpoint.isBinary
+    fn.sync = endpoint.sync
 
-    if(endpoint.isGetter) {
+    if(endpoint.sync) {
       this
         .getConnector()
-
+        .createCustomMethod(fn, endpoint, methodName)
     }
     
     if(fn.store) {

@@ -67,37 +67,36 @@ class ModelConnector {
   //   }))
   // }
 
-  createConnectorMethod(endpoint){
-    
-  }
-
-
-  getter(url, params) {
+  createCustomMethod(fn, endpoint, methodName){
+    // console.log('endpoint: ', endpoint);
     const { model, $state } = this
-    const id = `${url}-${JSON.stringify(params)}`
-    const possibleCached = $state.get('getters', id)
-    if (possibleCached) {return possibleCached}
-    const $item = $state.select('getters', id)
-    $item.set({ isLoading: true, data: {} })
-    model.get(params)
-      .then(item => {
-        if (!item) { return }
-        $item.merge({
-          error: false,
-          isLoading: false,
-          data: {
-            ...$item.get('data'),
-            ...item,
-          },
+    this[methodName] = (params) => {
+      
+      const id = `${methodName}-${JSON.stringify(params)}`
+      const possibleCached = $state.get('getters', id)
+      if (possibleCached) { return possibleCached }
+      const $item = $state.select('getters', id)
+      $item.set({ isLoading: true, data: {} })
+      model[methodName](params)
+        .then(item => {
+          if (!item) { return }
+          $item.merge({
+            error: false,
+            isLoading: false,
+            data: {
+              ...$item.get('data'),
+              ...item,
+            },
+          })
         })
-      })
-      .catch(response => {
-        $item.merge({
-          isLoading: false,
-          error: true,
+        .catch(response => {
+          $item.merge({
+            isLoading: false,
+            error: true,
+          })
         })
-      })
-    return $item.get()
+      return $item.get()
+    }
   }
 
   get(params, collection = 'all') {
