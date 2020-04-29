@@ -30,7 +30,7 @@ class Model extends Emmett {
     Object.keys(api).forEach(method => {
       // console.log('method: ', method);
       this.api[method] = this.createEndpoint(api[method], method)
-      if(!this[method]){
+      if (!this[method]) {
         this._createCustomApiMethod(method)
       }
     })
@@ -46,14 +46,14 @@ class Model extends Emmett {
   }
 
   createEndpoint(endpoint, methodName) {
-    
+
     if (typeof endpoint === 'string') {
       const fn = params => expandURL(endpoint, params)
       return fn
     }
 
-    const fn = params => 
-      typeof endpoint.url === 'string' 
+    const fn = params =>
+      typeof endpoint.url === 'string'
         ? expandURL(endpoint.url, params)
         : expandURL(endpoint.url(params, endpoint), params)
 
@@ -65,19 +65,20 @@ class Model extends Emmett {
     fn.isBinary = endpoint.isBinary
     fn.sync = endpoint.sync
 
-    if(endpoint.sync) {
+    if (endpoint.sync) {
       this
         .getConnector()
         .createCustomMethod(fn, endpoint, methodName)
     }
-    
-    if(fn.store) {
-      if(typeof fn.store === 'string') {
+
+    if (fn.store) {
+      if (typeof fn.store === 'string') {
         this.getConnector().$state.set(fn.store, {
           data: null
         })
+      } else {
+        throw new Error(`Unsupported store type. Must be string`)
       }
-      throw new Error(`Unsupported store type. Must be string`)
     }
 
     return fn
@@ -86,7 +87,7 @@ class Model extends Emmett {
   get(id) {
     const type = typeof id
     const params = (type === 'string' || type === 'number')
-      ? {[this.idKey]: id}
+      ? { [this.idKey]: id }
       : id
     return this._makeRequest(params, 'get', this.dataItemKey)
   }
@@ -119,19 +120,19 @@ class Model extends Emmett {
 
     payload = (fn && fn.export) ? fn.export((payload || {})) : (payload || {})
 
-    
+
     const append = getConfig('append')
     const getError = getConfig('getError')
-    
-    
-    if(append) {
+
+
+    if (append) {
       const appendedData = typeof append === 'function' ? append(payload, this, method) : append
       Object.assign(payload, appendedData)
     }
 
     this.emit(`${method}Before`, payload)
     const { $onResponse, ...data } = payload
-    
+
 
     const endpoint = fn(data)
     // console.log('endpoint: ', endpoint);
@@ -150,7 +151,7 @@ class Model extends Emmett {
       })
       .then(response => {
         const { body } = response
-        if( body ) {
+        if (body) {
           this.emit(`${method}Success`, body)
           $onResponse && $onResponse(body)
           const rawBody = body[key] || body
@@ -179,17 +180,17 @@ class Model extends Emmett {
     if (fn.isBinary) {
       request
         .responseType('blob')
-        // .parse((res, callback) => {
-        //   res.data = ''
-        //   res.setEncoding('binary')
-        //   res.on('data', (chunk) => {
-        //     res.data += chunk
-        //   })
-        //   res.on('end', () => {
-        //     callback(null, new Buffer(res.data, 'binary'));
-        //   })
-        // })
-        // .buffer()
+      // .parse((res, callback) => {
+      //   res.data = ''
+      //   res.setEncoding('binary')
+      //   res.on('data', (chunk) => {
+      //     res.data += chunk
+      //   })
+      //   res.on('end', () => {
+      //     callback(null, new Buffer(res.data, 'binary'));
+      //   })
+      // })
+      // .buffer()
     }
 
     if (accept) {
@@ -209,7 +210,7 @@ class Model extends Emmett {
     }
     if (auth) {
       request.set(`Authorization`, typeof auth === 'function' ? auth({
-        ...data, 
+        ...data,
         ...originalData
       }, data, originalData) : auth)
     }
@@ -222,13 +223,23 @@ class Model extends Emmett {
       }
     }
 
-    if(headers) {
-      if (Array.isArray(headers)) {
-        headers.forEach(h => request.set(h.key, h.value))
+    const _headers = typeof headers === 'function' ?
+      headers({
+        ...data,
+        ...originalData
+      }, data, originalData) : headers
+
+    if (_headers) {
+      if (Array.isArray(_headers)) {
+        _headers.forEach(h => request.set(h.key, h.value))
+      } else {
+        Object.keys(_headers).forEach(h => {
+          request.set(h, _headers[h])
+        })
       }
     }
 
-    if(unsetHeaders) {
+    if (unsetHeaders) {
       if (Array.isArray(unsetHeaders)) {
         unsetHeaders.forEach(h => request.unset(h))
       }
