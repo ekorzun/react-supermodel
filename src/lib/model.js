@@ -136,7 +136,7 @@ class Model extends Emmett {
     const endpoint = fn(data)
     // console.log('endpoint: ', endpoint);
 
-    return this.request(endpoint, endpoint.data, payload, fn)
+    const r = this.request(endpoint, endpoint.data, payload, fn)
       .then(response => {
         const err = getError(response)
         if (err) {
