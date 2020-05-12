@@ -140,13 +140,13 @@ class ModelConnector {
 
   updateById(id, props) {
     const { $state, model } = this
-    const { $key, ...params } = props
+    const { $key, $noApi, ...params } = props
     params[model.idKey] = id
     const $item = $state.select('items', id)
-    const optimisticUpdate = model.optimistic && (model.optimistic === true || model.optimistic.update)
+    const optimisticUpdate = $noApi || model.optimistic && (model.optimistic === true || model.optimistic.update)
 
     if ($item.exists()) {
-      $item.set('isUpdating', true)
+      !$noApi && $item.set('isUpdating', true)
     } else {
       $item.set({ isUpdating: true, data: {} })
     }
@@ -155,6 +155,10 @@ class ModelConnector {
       $item.select('data').merge({
         ...props,
       })
+    }
+
+    if ($noApi) {
+      return Promise.resolve($item.get())
     }
 
     return model.update(id, props)
