@@ -76,8 +76,9 @@ class Model extends Emmett {
         this.getConnector().$state.set(fn.store, {
           data: null
         })
+      } else {
+        throw new Error(`Unsupported store type. Must be string`)
       }
-      throw new Error(`Unsupported store type. Must be string`)
     }
 
     return fn
@@ -224,9 +225,19 @@ class Model extends Emmett {
       }
     }
 
-    if(headers) {
-      if (Array.isArray(headers)) {
-        headers.forEach(h => request.set(h.key, h.value))
+    const _headers = typeof headers === 'function' ?
+      headers({
+        ...data,
+        ...originalData
+      }, data, originalData) : headers
+
+    if (_headers) {
+      if (Array.isArray(_headers)) {
+        _headers.forEach(h => request.set(h.key, h.value))
+      } else {
+        Object.keys(_headers).forEach(h => {
+          request.set(h, _headers[h])
+        })
       }
     }
 
