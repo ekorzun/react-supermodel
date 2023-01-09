@@ -24,7 +24,7 @@
     "dist"
   ],
   "dependencies": {
-    "baobab": "^2.5.2",
+    "baobab": "^2.6.1",
     "superagent": "^4.0.0",
     "superagent-prefix": "^0.0.2",
     "superagent-suffix": "^0.1.0"
